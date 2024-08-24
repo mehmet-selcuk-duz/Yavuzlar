@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Admin Paneli</h1>
+    <button id="geriBtn" onclick="window.location.href='index.html'">Geri</button>
+    <div>
+        <h2>Soru Ekleme / Düzenleme</h2>
+        <form id="soruEklemeFormu">
+            <input type="hidden" id="soruIndex">
+            <label>Soru:</label><br>
+            <input type="text" id="soru" class="input-field" required><br>
+            <label>Zorluk Derecesi:</label><br>
+            <select id="zorluk" class="select-field">
+                <option value="kolay">Kolay</option>
+                <option value="orta">Orta</option>
+                <option value="zor">Zor</option>
+            </select><br>
+            <label>Şıklar:</label><br>
+            <input type="text" id="sik1" class="input-field" required><br>
+            <input type="text" id="sik2" class="input-field" required><br>
+            <input type="text" id="sik3" class="input-field" required><br>
+            <input type="text" id="sik4" class="input-field" required><br>
+            <label>Doğru Şık:</label><br>
+            <input type="text" id="dogruSik" class="input-field" required><br>
+            <button type="submit">Kaydet</button>
+        </form>
+
+        <h2>Eklenen Sorular</h2>
+        <input type="text" id="soruArama" class="input-field" placeholder="Sorular arasında ara...">
+        <div id="soruListesi"></div>
+    </div>
+</body>
+<script src="admin.js" defer></script>
+</html>

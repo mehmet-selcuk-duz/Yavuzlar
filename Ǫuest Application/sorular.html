@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Yap</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Quiz Yarışması</h1>
+    <button id="geriBtn" onclick="window.location.href='index.html'">Geri</button>
+    <br><br>
+    <div id="quiz-container">
+        <h2>Soru:</h2>
+        <p id="soruMetni"></p>
+        <div id="siklar"></div>
+        <button id="nextBtn" style="display:none;">Sonraki Soru</button>
+    </div>
+    <div id="sonuc">
+        <h2>Sonuç</h2>
+        <p>Doğru Cevap Sayısı: <span id="dogruSayisi"></span></p>
+        <p>Yanlış Cevap Sayısı: <span id="yanlisSayisi"></span></p>
+        <p>Toplam Puan: <span id="toplamPuan"></span></p>
+    </div>
+</body>
+<script src="soru.js" defer></script>
+</html>
