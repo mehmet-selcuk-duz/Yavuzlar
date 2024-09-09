@@ -9,8 +9,11 @@
 <body>
     <h1>Yavuzlar Ǫuest Application</h1>
     <nav>
-        <a href="admin.php"><button type="submit">Admin Paneli</button></a>
-        <a href="sorular.php"><button type="submit">Sorular</button></a>
+        <?php session_start(); if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') { ?>
+            <a href="admin.php"><button type="submit">Sorular</button></a>
+            <a href="users.php"><button type="submit">Kullanıcılar</button></a>
+        <?php } ?>
+        <a href="sorular.php"><button type="submit">Quiz</button></a>
     </nav>
 </body>
 </html>

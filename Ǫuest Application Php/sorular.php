@@ -1,5 +1,5 @@
 <?php
-$db = new PDO('sqlite:sorular.db');
+$db = new PDO('sqlite:veriler.db');
 
 $query = "SELECT * FROM sorular";
 $stmt = $db->query($query);
