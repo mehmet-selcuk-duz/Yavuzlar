@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 $db = new PDO('sqlite:veriler.db');
 
 $users = $db->query("SELECT * FROM users")->fetchAll(PDO::FETCH_ASSOC);

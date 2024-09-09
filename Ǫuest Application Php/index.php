@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
@@ -16,11 +16,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 <body>
     <h1>Yavuzlar Ǫuest Application</h1>
     <nav>
-        <?php session_start(); if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') { ?>
-            <a href="admin.php"><button type="submit">Sorular</button></a>
-            <a href="users.php"><button type="submit">Kullanıcılar</button></a>
+        <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') { ?>
+            <a href="admin.php"><button type="button">Sorular</button></a>
+            <a href="users.php"><button type="button">Kullanıcılar</button></a>
         <?php } ?>
-        <a href="sorular.php"><button type="submit">Quiz</button></a>
+        <a href="sorular.php"><button type="button">Quiz</button></a>
     </nav>
 </body>
 </html>
