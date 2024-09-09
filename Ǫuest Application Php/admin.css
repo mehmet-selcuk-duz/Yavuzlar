@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+#soru-ekle {
+    width: 300px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+#soru-listesi {
+    width: 500px;
+    margin: auto;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+
+button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
