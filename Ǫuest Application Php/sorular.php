@@ -7,12 +7,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $db = new PDO('sqlite:veriler.db');
 
+// Soruları veritabanından çekme
 $query = "SELECT * FROM sorular";
 $stmt = $db->query($query);
 $sorular = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $suankiSoruIndex = isset($_POST['suankiSoruIndex']) ? (int)$_POST['suankiSoruIndex'] : 0;
-
 $dogruSayisi = isset($_POST['dogruSayisi']) ? (int)$_POST['dogruSayisi'] : 0;
 $yanlisSayisi = isset($_POST['yanlisSayisi']) ? (int)$_POST['yanlisSayisi'] : 0;
 $toplamPuan = isset($_POST['toplamPuan']) ? (int)$_POST['toplamPuan'] : 0;
@@ -27,17 +27,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cevap'])) {
     $cevap = $_POST['cevap'];
     $soru = $sorular[$suankiSoruIndex];
     $dogruMu = (int)$cevap === (int)$soru['dogruSik'];
-    
+
     if ($dogruMu) {
         $dogruSayisi++;
         $toplamPuan += $zorlukPuanlari[$soru['zorluk']];
     } else {
         $yanlisSayisi++;
     }
-    
+
     $suankiSoruIndex++;
-    
+
     if ($suankiSoruIndex >= count($sorular)) {
+        // Tüm sorular bitmişse, toplam puanı veritabanında güncelle
+        $userId = $_SESSION['user_id'];
+
+        // Mevcut kullanıcının skorunu getir
+        $query = "SELECT skore FROM users WHERE id = :id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $currentScore = $stmt->fetchColumn();
+
+        // Yeni skoru hesapla ve güncelle
+        $newScore = $currentScore + $toplamPuan;
+
+        $updateQuery = "UPDATE users SET skore = :newScore WHERE id = :id";
+        $updateStmt = $db->prepare($updateQuery);
+        $updateStmt->bindParam(':newScore', $newScore, PDO::PARAM_INT);
+        $updateStmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $updateStmt->execute();
+
+        // Soru indexini sıfırlayarak testi bitir
         $suankiSoruIndex = -1;
     }
 }
@@ -57,7 +77,7 @@ $soru = $suankiSoruIndex >= 0 ? $sorular[$suankiSoruIndex] : null;
     <h1>Quiz Yarışması</h1>
     <button id="geriBtn" onclick="window.location.href='index.php'">Geri</button>
     <br><br>
-    
+
     <div id="quiz-container" style="<?php echo $soru ? '' : 'display: none;'; ?>">
         <h2>Soru:</h2>
         <p><?php echo htmlspecialchars($soru['soru']); ?></p>
@@ -77,7 +97,7 @@ $soru = $suankiSoruIndex >= 0 ? $sorular[$suankiSoruIndex] : null;
             ?>
         </form>
     </div>
-    
+
     <div id="sonuc" style="<?php echo $soru ? 'display: none;' : 'display: block;'; ?>">
         <h2>Sonuç</h2>
         <p>Doğru Cevap Sayısı: <span><?php echo $dogruSayisi; ?></span></p>

@@ -4,6 +4,20 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
+
+// Veritabanına bağlanma
+try {
+    $pdo = new PDO('sqlite:veriler.db');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Kullanıcıları skorlarına göre yüksekten düşüğe sıralayarak çekme
+    $stmt = $pdo->query('SELECT username, skore FROM users ORDER BY skore DESC');
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (PDOException $e) {
+    echo 'Veritabanı bağlantı hatası: ' . $e->getMessage();
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="tr">
@@ -22,5 +36,20 @@ if (!isset($_SESSION['user_id'])) {
         <?php } ?>
         <a href="sorular.php"><button type="button">Quiz</button></a>
     </nav>
+    <center>
+        <h2>Skor Tablosu</h2>
+        <table>
+            <tr>
+                <th>Kullanıcı</th>
+                <th>Skor</th>
+            </tr>
+            <?php foreach ($users as $user) { ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($user['username']); ?></td>
+                    <td><?php echo htmlspecialchars($user['skore']); ?></td>
+                </tr>
+            <?php } ?>
+        </table>
+    </center>
 </body>
 </html>

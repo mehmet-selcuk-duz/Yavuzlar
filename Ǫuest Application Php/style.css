@@ -127,3 +127,20 @@ button:hover {
 #geriBtn:hover {
     background-color: #5a6268;
 }
+
+table {
+    width: 200px;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 10px;
+    border: 1px solid black;
+  }
+  th {
+    background-color: lightgray;
+    color: black;
+  }
+  td {
+    background-color: white;
+    color: black;
+  }
