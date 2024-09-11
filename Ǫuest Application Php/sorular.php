@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $db = new PDO('sqlite:veriler.db');
 
-// Soruları veritabanından çekme
 $query = "SELECT * FROM sorular";
 $stmt = $db->query($query);
 $sorular = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -38,17 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cevap'])) {
     $suankiSoruIndex++;
 
     if ($suankiSoruIndex >= count($sorular)) {
-        // Tüm sorular bitmişse, toplam puanı veritabanında güncelle
         $userId = $_SESSION['user_id'];
 
-        // Mevcut kullanıcının skorunu getir
         $query = "SELECT skore FROM users WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $currentScore = $stmt->fetchColumn();
 
-        // Yeni skoru hesapla ve güncelle
         $newScore = $currentScore + $toplamPuan;
 
         $updateQuery = "UPDATE users SET skore = :newScore WHERE id = :id";
@@ -57,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cevap'])) {
         $updateStmt->bindParam(':id', $userId, PDO::PARAM_INT);
         $updateStmt->execute();
 
-        // Soru indexini sıfırlayarak testi bitir
         $suankiSoruIndex = -1;
     }
 }

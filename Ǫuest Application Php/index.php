@@ -5,12 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Veritabanına bağlanma
 try {
     $pdo = new PDO('sqlite:veriler.db');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Kullanıcıları skorlarına göre yüksekten düşüğe sıralayarak çekme
     $stmt = $pdo->query('SELECT username, skore FROM users ORDER BY skore DESC');
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
