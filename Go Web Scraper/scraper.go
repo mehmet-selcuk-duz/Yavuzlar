@@ -8,7 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func verileriCek(url, dosyaAdi, veriTipi string, secici string, baslikSecici, linkSecici, aciklamaSecici string) {
+func verileriCek(url, dosyaAdi, veriTipi, secici, baslikSecici, linkSecici, aciklamaSecici, tarihSecici string) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatalf("%s verisi alınamadı: %v", veriTipi, err)
@@ -32,8 +32,9 @@ func verileriCek(url, dosyaAdi, veriTipi string, secici string, baslikSecici, li
 			link = "Bağlantı bulunamadı"
 		}
 		aciklama := element.Find(aciklamaSecici).Text()
+		tarih := element.Find(tarihSecici).Text()
 
-		_, err := dosya.WriteString(fmt.Sprintf("Başlık: %s\nURL: %s\nAçıklama: %s\n\n", baslik, link, aciklama))
+		_, err := dosya.WriteString(fmt.Sprintf("Başlık: %s\nTarih: %s\nURL: %s\nAçıklama: %s\n\n", baslik, tarih, link, aciklama))
 		if err != nil {
 			log.Printf("%s dosyasına yazılamadı: %v", veriTipi, err)
 		}
@@ -57,13 +58,13 @@ func main() {
 		switch secim {
 		case 1:
 			verileriCek("https://thehackernews.com/", "hackernews.txt", "The Hacker News",
-				".body-post.clear", ".home-title", ".story-link", ".home-desc")
+				".body-post.clear", ".home-title", ".story-link", ".home-desc", ".h-datetime")
 		case 2:
 			verileriCek("https://cybersecuritynews.com/", "cybersecuritynews.txt", "Cyber Security News",
-				".td-block-span12 .td_module_10", ".entry-title a", ".entry-title a", ".td-excerpt")
+				".td-block-span12 .td_module_10", ".entry-title a", ".entry-title a", ".td-excerpt", ".td-module-meta-info .entry-date")
 		case 3:
 			verileriCek("https://www.cybersecuritydive.com/", "cybersecuritydive.txt", "Cyber Security Dive",
-				"li.row.feed__item", ".feed__title a", ".feed__title a", ".feed__description")
+				"li.row.feed__item", ".feed__title a", ".feed__title a", ".feed__description", ".feed__date")
 		case 4:
 			fmt.Println("Çıkış yapılıyor...")
 			return
